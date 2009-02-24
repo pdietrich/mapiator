@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>test map</title>
+	<style type="text/css">
+		html, body {
+			margin:0;
+			padding:0;
+			position:absolute;
+			top: 0; left: 0;
+		}
+		/*
+		canvas {
+			position: absolute;
+			left:0; top:0;
+			border: 0;
+			z-index: 20;
+		}
+		*/
+		div#map {
+			width:800px; height:500px;
+			margin:0;
+			padding:0;
+			border:0;
+			background-color: #999;
+			z-index: 10;
+			overflow: hidden;
+			position: relative;
+			top: 20px; left: 20px;
+		}
+		div#test_poi {
+			position:absolute;
+			width:70px;
+			height:25px;
+			background-color: #fa5;
+			z-index:31;
+		}
+	</style>	
+</head>
+<body onload="go();">
+	<div style="position:relative; top:20px; left:20px;">
+		<div id="map"></div>
+		<div id="debugOut" style="position:absolute; left:850px; top:0; width:400px;">test123</div>
+	</div>
+	<script type="text/javascript" src="Mapiator.js"></script>
+	<script type="text/javascript" src="WKTParser.js"></script>
+	<script type="text/javascript">
+		Mapiator.W3CController = function( map ) {
+			var mapDiv = map.mapDiv;
+			var xmove, ymove;
+			function moveMap(e) {
+				e.preventDefault();
+				if( typeof xmove != 'undefined' )
+					map.moveByPx( e.clientX - xmove, e.clientY - ymove );
+				xmove = e.clientX;
+				ymove = e.clientY;
+			}
+			mapDiv.addEventListener('mousedown', function(e){
+				e.preventDefault();
+				mapDiv.addEventListener('mousemove', moveMap, false);
+			}, false);
+			function disableDrag(e){
+				e.preventDefault();
+				var undef;
+				xmove = undef;
+				mapDiv.removeEventListener('mousemove', moveMap, false);
+			}
+			mapDiv.addEventListener('mouseup', disableDrag, false);
+			mapDiv.addEventListener('mouseout', disableDrag, false);
+		};
+		
+		var myMap;
+		function again(){
+			//myMap.setCenter(53.0, 10.0);
+			myMap.setCenter(48, 10);
+			myMap.redraw();
+			//myMap.moveByPx( -30, 0 );
+		}
+		function go() {
+			var p = WKTParser.parse( "POINT (11.5757639569603175 48.1365236143369373)" );
+			var ls = WKTParser.parse( "LINESTRING (11.5752 48.1372, 11.5750 48.1376, 11.5756 48.1371)" );
+
+			// myMap.initialize('myMap');			
+			// alert('ferdich');
+			myMap = new Mapiator.Map('map');
+			myMap.setZoomLevel( 4 );
+			//myMap.setCenter(48.0, 10.0);
+			myMap.setCenter(48, 10);
+			// myMap.setCenter(48.48, -4.75);
+			
+			ls = WKTParser.parse( "LINESTRING (9 50, 12 50, 11.5756 48.1371)" );
+			ls.strokeWidth = 10;
+			ls.strokeStyle = 'rgba(0, 100, 0, 0.5)';
+			myMap.addElement( ls );
+			
+			var poly = WKTParser.parse( "Polygon (7 50, 10 50, 9.5756 48.1371)" );
+			poly.fillStyle = 'rgba(0, 0, 100, 0.5)';
+			myMap.addElement( poly );
+			
+			
+			// myMap.drawLayer.drawProjected = function(ctx) {
+			// 	// console.log('myMap.drawProjected');
+			// 	ctx.ctx.lineWidth *= 2;
+			// 	ctx.beginPath();
+			// 	 	ctx.moveTo(0,0);
+			// 	 	ctx.lineTo(49,10);
+			// 		ctx.lineTo(48.48,-4.75); // p = [lat, lng]
+			// 	ctx.stroke();
+			// 
+			// 	// ctx.ctx.fillStyle = "rgb(200,0,0)";
+			// 	// ctx.fillRect(49,0, 53, 10);
+			// 	ctx.beginPath();
+			// 		ctx.arc(49,10, 20, 0.0, 2*Math.PI);
+			// 	ctx.stroke();
+			// };
+			// 
+			// 
+			// myMap.drawLayer.drawRaw = function(ctx) {
+			// 	ctx.save();
+			// 		//console.log('myMap.drawRaw');
+			// 		ctx.save();
+			// 			ctx.translate(myMap.width/2, myMap.height/2);
+			// 			ctx.lineCap = 'round';
+			// 			ctx.beginPath();
+			// 				ctx.moveTo(-10, 0);
+			// 				ctx.lineTo(10,0);
+			// 				ctx.moveTo(0,10);
+			// 				ctx.lineTo(0,-10);
+			// 			ctx.stroke();
+			// 		ctx.restore();
+			// 	ctx.restore();
+			// };
+			
+			
+			var test = document.createElement('div');
+			test.id = 'test_poi';
+			test.addEventListener('click', function(e){alert('bitte dieses DIV nicht mehr klicken!');}, false);
+			myMap.overlayLayer.addElement(test, 48, 10);
+
+			myMap.redraw();
+			
+			// window.setTimeout('again();', 2000);
+			var controller = Mapiator.W3CController( myMap );
+			
+			var zoomInButton = document.createElement('div');
+			var s = zoomInButton.style;
+			s.position = 'absolute';
+			s.zIndex = '30';
+			s.width = '30px';
+			s.height = '30px';
+			s.left = '15px';
+			s.top = '15px';
+			s.backgroundColor = '#aaa';
+			myMap.mapDiv.appendChild( zoomInButton );
+			zoomInButton.addEventListener('mouseup', function(){myMap.zoomIn();}, false);
+			
+			var zoomOutButton = document.createElement('div');
+			s = zoomOutButton.style;
+			s.position = 'absolute';
+			s.zIndex = '30';
+			s.width = '30px';
+			s.height = '30px';
+			s.left = '15px';
+			s.top = '55px';
+			s.backgroundColor = '#aaa';
+			myMap.mapDiv.appendChild( zoomOutButton );
+			zoomOutButton.addEventListener('mouseup', function(){myMap.zoomOut();}, false);
+		}
+	</script>
+</body>
+</html>
