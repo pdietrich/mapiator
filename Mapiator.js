@@ -434,3 +434,27 @@ Mapiator.Map = function( divId ) {
 	
 	this.overlayLayer = new Mapiator.OverlayLayer(this);
 };
+
+Mapiator.W3CController = function( map ) {
+	var mapDiv = map.mapDiv;
+	var xmove, ymove;
+	function moveMap(e) {
+		e.preventDefault();
+		if( typeof xmove != 'undefined' )
+			map.moveByPx( e.clientX - xmove, e.clientY - ymove );
+		xmove = e.clientX;
+		ymove = e.clientY;
+	}
+	mapDiv.addEventListener('mousedown', function(e){
+		e.preventDefault();
+		mapDiv.addEventListener('mousemove', moveMap, false);
+	}, false);
+	function disableDrag(e){
+		e.preventDefault();
+		var undef;
+		xmove = undef;
+		mapDiv.removeEventListener('mousemove', moveMap, false);
+	}
+	mapDiv.addEventListener('mouseup', disableDrag, false);
+	mapDiv.addEventListener('mouseout', disableDrag, false);
+};
