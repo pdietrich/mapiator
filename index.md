@@ -14,7 +14,7 @@ Mapiator is a online mapping application like <a href="http://maps.google.com">G
 
 It was created by Patrick Dietrich in February 2009.
 
-Test it:
+Try it:
 
 <div id="map" style="width:660px; height:300px; position:relative; margin-left:50px;">
 </div>
