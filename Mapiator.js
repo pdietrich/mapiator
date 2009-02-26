@@ -160,18 +160,22 @@ Mapiator.CanvasTile = function(x, y, zoom, ox, oy, map) {
 	function drawElements() {
 		for( id in map._pathsAndPolygons) {
 			var pathOrPolygon = map._pathsAndPolygons[id];
+			var isPath = (pathOrPolygon.type == 'Path');
 			ctx.save();
-				ctx.strokeStyle = pathOrPolygon.strokeStyle;
-				ctx.fillStyle = pathOrPolygon.fillStyle;
-				ctx.lineWidth *= pathOrPolygon.strokeWidth;
+				if( isPath ) {
+					ctx.strokeStyle = pathOrPolygon.strokeStyle;
+					ctx.lineWidth *= pathOrPolygon.strokeWidth;
+				}
+				else // it's a polygon 
+					ctx.fillStyle = pathOrPolygon.fillStyle;
+					
 				ctx.beginPath();
 				util.forEach( pathOrPolygon.projectedPoints, function(p, index) {
 					if( index == 0 ) ctx.moveTo(p[0], p[1]);
 					else ctx.lineTo(p[0], p[1]);
 				});
-				if( pathOrPolygon.type == 'Path' ) ctx.stroke();
-				else if( pathOrPolygon.type == 'Polygon' ) ctx.fill();
-				else alert('DrawLayer#removeElement: unknown Element type : ' + pathOrPolygon.type);
+				if( isPath ) { ctx.stroke(); }
+				else ctx.fill();
 			ctx.restore();
 			
 			// for debuging: draw bounding box:
@@ -433,6 +437,89 @@ Mapiator.Map = function( divId ) {
 	};
 	
 	this.overlayLayer = new Mapiator.OverlayLayer(this);
+};
+
+Mapiator.PathOrPolygon = function( points ) {
+	this['id'] = Mapiator.PathOrPolygon._nextID++;
+    this.points = points || [];
+	this.appendPoint = function( lat, lng ) {
+		this.points[this.points.length] = [lat,lng];
+	};
+	this.recalc = function() {
+		this.projectedPoints = [];
+		var l,t,r,b;
+		var p = this.points;
+		for(var i=0; i < p.length; ++i){
+			var pp = this.projectedPoints[i] = Mapiator.util.project(p[i][0], p[i][1]);
+			l = (l && l<pp[0]) ? l : pp[0];
+			t = (t && t<pp[1]) ? t : pp[1];
+			r = (r && r>pp[0]) ? r : pp[0];
+			b = (b && b>pp[1]) ? b : pp[1];				
+		}
+		this.bbLeft = l;
+		this.bbTop = t;
+		this.bbRight = r;
+		this.bbBottom = b;
+		// console.log('l=',l,'t=',t,'r=',r,'b=',b);
+	};
+};
+Mapiator.PathOrPolygon._nextID = 1;
+
+Mapiator.Path = function( points ) {
+	Mapiator.PathOrPolygon.apply( this, points );
+}
+Mapiator.Path.prototype = {
+	type: 'Path',
+	strokeStyle: "rgba(0,0,0, 1.0)",
+	strokeWidth: 2.0
+};
+
+Mapiator.Polygon = function( points ) {
+	Mapiator.PathOrPolygon.apply( this, points );
+}
+Mapiator.Polygon.prototype = {
+	type: 'Polygon',
+	// strokeStyle: "rgba(0,0,0, 1.0)",
+	fillStyle: "rgba(0,0,0, 1.0)"
+};
+
+Mapiator.parseWKT = function( wkt ) {
+	var Point = function( lat,lng ) {
+		this['id'] = Mapiator.PathOrPolygon._nextID++;
+        this.lat = lat;
+        this.lng = lng;
+    };
+	Point.prototype = {type:'POINT'};
+
+    regex = {
+        point: /^\s*POINT\s*\(\s*(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s*\)\s*$/i, // POINT (11.5757639569603175 48.1365236143369373)
+        lineString: /^LINESTRING\s*\((.*)\)\s*$/i, // LINESTRING (11.5752 48.1372, 11.5750 48.1376, 11.5756 48.1371)
+		polygon: /^POLYGON\s*\((.*)\)\s*$/i // POLYGON (11.5752 48.1372, 11.5750 48.1376, 11.5756 48.1371)
+    };
+
+	var m;
+       if( m = regex.point.exec( wkt ) ){
+           return new Point( parseFloat(m[2]), parseFloat(m[1]) );
+       }
+       else {
+		var p;
+		if( m = regex.lineString.exec( wkt ) ){
+			p = new Mapiator.Path();
+        }
+		else if( m = regex.polygon.exec( wkt ) ){
+			p = new Mapiator.Polygon();
+		}
+		else return null;
+		
+		var pointStrings = m[1].split(/\s*,\s*/);
+		Mapiator.util.forEach( pointStrings, function(ps){
+			var m2;
+			if( m2 = /^\s*(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s*$/.exec(ps) )
+				p.appendPoint( parseFloat(m2[2]), parseFloat(m2[1]) );
+		});
+		p.recalc();
+		return p;
+	}
 };
 
 Mapiator.W3CController = function( map ) {
