@@ -14,7 +14,7 @@ Mapiator is a online mapping application like <a href="http://maps.google.com">G
 
 Test it:
 
-<div id="map" style="width:600px; height:300px; position:relative; margin-left:50px;">
+<div id="map" style="width:660px; height:300px; position:relative; margin-left:50px;">
 </div>
 
 
@@ -42,7 +42,7 @@ That's what you need to set it up.
 What are Mapiator's main featues?
 -----------------------------------
 
-* it can be used with a wide range of different map tiles, e.g. with <a href="http://osm.org">Open Street Map</a>
+* it can be used with a wide range of different map tiles, e.g. with <a href="http://www.openstreetmap.org/">Open Street Map</a>
 * it can be moved around with the mouse (panning, except for IE6) and zoomed in and out
 * it can draw your paths and polygons (currently not in IE, yet)
 * you can attach any DOM element to a fixed geo position (latitute and longitude) on the map (e.g. to add a marker)
@@ -94,6 +94,8 @@ To draw a path or a polygon from WKT data do:
 {% highlight html %}
 <script type="text/javascript" src="WKTParser.js"></script>
 {% endhighlight %}
+
+<div><br /></div>
 
 {% highlight javascript %}
 var path = WKTParser.parse( "LINESTRING (9.0 50.0, 12.0 50.0, 11.5756 48.1371)" );
