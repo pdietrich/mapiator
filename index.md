@@ -12,6 +12,8 @@ What is Mapiator?
 Mapiator is a online mapping application like <a href="http://maps.google.com">Google Maps</a> or
 <a href="http://openlayers.org">Openlayers</a>. You can use it without any charge.
 
+It was created by Patrick Dietrich in February 2009.
+
 Test it:
 
 <div id="map" style="width:660px; height:300px; position:relative; margin-left:50px;">
@@ -116,11 +118,6 @@ poly.fillStyle = 'rgba(0, 0, 100, 0.5)';
 
 
 {% include mapiator_js.html %}
-
-
-
-
-
 
 
 
