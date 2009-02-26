@@ -397,6 +397,7 @@ Mapiator.Map = function( divId ) {
 	
 	this.getTileUrl = function(x, y, zoom){
 		// return 'tiles/'+ zoom +'_'+ x +'-'+ y +'.png';
+		if( zoom >= 12 ) return 'http://b.tile.openstreetmap.org/'+zoom+'/'+x+'/'+y+'.png';
 		return 'http://maps-for-free.com/layer/relief/z'+ zoom +'/row'+ y +'/'+ zoom +'_'+ x +'-'+ y +'.jpg';
 	};
 	
@@ -438,6 +439,7 @@ Mapiator.Map = function( divId ) {
 	};
 	
 	this.overlayLayer = new Mapiator.OverlayLayer(this);
+	Mapiator.W3CController( this );
 };
 
 Mapiator.PathOrPolygon = function( points ) {
@@ -545,4 +547,33 @@ Mapiator.W3CController = function( map ) {
 	}
 	mapDiv.addEventListener('mouseup', disableDrag, false);
 	mapDiv.addEventListener('mouseout', disableDrag, false);
+	
+	// add zoom buttons
+	var zoomInButton = document.createElement('div');
+	zoomInButton.innerHTML = '+';
+	var s = zoomInButton.style;
+	s.position = 'absolute';
+	s.zIndex = '30';
+	s.width = '30px';
+	s.height = '30px';
+	s.left = '15px';
+	s.top = '15px';
+	s.textAlign = 'center';
+	s.backgroundColor = '#aaa';
+	mapDiv.appendChild( zoomInButton );
+	zoomInButton.addEventListener('mouseup', function(){map.zoomIn();}, false);
+	
+	var zoomOutButton = document.createElement('div');
+	zoomOutButton.innerHTML = '-'
+	s = zoomOutButton.style;
+	s.position = 'absolute';
+	s.zIndex = '30';
+	s.width = '30px';
+	s.height = '30px';
+	s.left = '15px';
+	s.top = '55px';
+	s.textAlign = 'center';
+	s.backgroundColor = '#aaa';
+	mapDiv.appendChild( zoomOutButton );
+	zoomOutButton.addEventListener('mouseup', function(){map.zoomOut();}, false);
 };
