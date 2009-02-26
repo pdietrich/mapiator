@@ -355,6 +355,7 @@ Mapiator.Map = function( divId ) {
 	this.minZoom = 0;
 	
 	this.mapDiv = util.byId( divId );
+	this.mapDiv.style.overflow = "hidden";
 	this.movableContainer = new util.MovableContainer( this.mapDiv );
 	var visibleArea;
 
