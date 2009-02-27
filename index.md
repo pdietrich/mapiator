@@ -16,7 +16,7 @@ It was created by Patrick Dietrich in February 2009.
 
 Try it:
 
-<div id="map" style="width:660px; height:300px; position:relative; margin-left:50px;">
+<div id="map" style="width:660px; height:350px; position:relative; margin-left:50px;">
 </div>
 
 
@@ -44,27 +44,29 @@ That's what you need to set it up.
 What are Mapiator's main featues?
 -----------------------------------
 
-* it can be used with a wide range of different map tiles, e.g. with <a href="http://www.openstreetmap.org/">Open Street Map</a>
-* it can be moved around with the mouse (panning, except for IE6) and zoomed in and out
+* it can be used with a wide range of different map tiles, e.g. with <a href="http://www.openstreetmap.org/">Open Street Map</a> or the really great ones from <a href="http://www.maps-for-free.com/">maps-for-free.com</a>
+* it can be moved around with the mouse ("panning", except in IE6) and zoomed in and out
 * it can draw your paths and polygons (currently not in IE, yet)
 * you can attach any DOM element to a fixed geo position (latitute and longitude) on the map (e.g. to add a marker)
 * it has a clean and simple JavaScript API
 * it is very small (only about 500 lines of JavaScript code)
 * it runs on standard conform browsers including inlcuding Firefox, Safari (also on iPhone) and Google Chrome
-* it can read WKT strings from geo databases like PostGIS to display paths and polygons
+* it can read WKT strings from geo databases like <a href="http://postgis.refractions.net/">PostGIS</a> to display paths and polygons
 
 What features are missing?
 ------------------------------
 
 * drawing paths and polygons does not work in IE, yet
-* moving the map with the mouse (panning), does not work in IE6, yet
+* moving the map with the mouse ("panning"), does not work in IE6, yet
 * wrapping the map at the date border is not implemented, yet
+* zoom level 0 and 1 (the ones zoomed out furthest) are not as nice, yet
 
 
 What technologies are used for the Mapiator
 -----------------------------------------------
 
 * paths and polygons are drawn using Canvas tiles (i.e. tiles are built from Canvas elements which can be moved around like map tiles to avoid unnecessary drawing).
+* the rest is just standard DOM magic
 
 Adding (clickable) elements to the map
 -------------------------------------------
@@ -93,24 +95,18 @@ Drawing paths and polygons
 
 To draw a path or a polygon from WKT data do:
 
-{% highlight html %}
-<script type="text/javascript" src="WKTParser.js"></script>
-{% endhighlight %}
-
-<div><br /></div>
-
 {% highlight javascript %}
-var path = WKTParser.parse( "LINESTRING (9.0 50.0, 12.0 50.0, 11.5756 48.1371)" );
+var path = Mapiator.parseWKT( "LINESTRING (9.0 50.0, 12.0 50.0, 11.6 48.1)" );
 map.addElement( path );
 
-var poly = WKTParser.parse( "POLYGON (7 50, 10 50, 9.5756 48.1371)" );
+var poly = Mapiator.parseWKT( "POLYGON (7.0 50.0, 10.0 50.0, 9.57 48.13)" );
 map.addElement( poly );
 {% endhighlight %}
 
 To style your path or polygon do:
 
 {% highlight javascript %}
-path.strokeWidth = 10; // pixels
+path.strokeWidth = 5; // pixels
 path.strokeStyle = 'rgba(0, 100, 0, 0.5)'; // YES! transparency is supported!
 
 poly.fillStyle = 'rgba(0, 0, 100, 0.5)';

@@ -350,6 +350,8 @@ Mapiator.Map = function( divId ) {
 	var util = Mapiator.util;
 	var self = this;
 	
+	var IE='\v'=='v'; // detect IE
+	
 	this.tileSizeInPx;
 	this.maxZoom = 18;
 	this.minZoom = 0;
@@ -417,7 +419,7 @@ Mapiator.Map = function( divId ) {
 		visibleArea.move( -x,-y );
 		
 		this.tileLayer.showTiles();
-		this.canvasTileLayer.showTiles();
+		if( !IE ) this.canvasTileLayer.showTiles();
 	};
 	
 	this.redraw = function() {
@@ -432,9 +434,10 @@ Mapiator.Map = function( divId ) {
 		if( this.tileLayer ) this.tileLayer.destroy();		
 		this.tileLayer = new Mapiator.TileLayer(this, util.clone(visibleArea), Mapiator.StdTile);
 		
-		if( this.canvasTileLayer ) this.canvasTileLayer.destroy();
-		this.canvasTileLayer = new Mapiator.TileLayer(this, util.clone(visibleArea), Mapiator.CanvasTile);
-		
+		if( !IE ) {
+			if( this.canvasTileLayer ) this.canvasTileLayer.destroy();
+			this.canvasTileLayer = new Mapiator.TileLayer(this, util.clone(visibleArea), Mapiator.CanvasTile);
+		}
 		this.overlayLayer.redraw();
 	};
 	
