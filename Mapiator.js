@@ -538,18 +538,17 @@ Mapiator.W3CController = function( map ) {
 		xmove = e.clientX;
 		ymove = e.clientY;
 	}
-	mapDiv.addEventListener('mousedown', function(e){
-		e.preventDefault();
-		mapDiv.addEventListener('mousemove', moveMap, false);
-	}, false);
 	function disableDrag(e){
 		e.preventDefault();
 		var undef;
 		xmove = undef;
-		mapDiv.removeEventListener('mousemove', moveMap, false);
+		document.removeEventListener('mousemove', moveMap, false);
 	}
-	mapDiv.addEventListener('mouseup', disableDrag, false);
-	mapDiv.addEventListener('mouseout', disableDrag, false);
+	map.mapDiv.addEventListener('mousedown', function(e){
+		e.preventDefault();
+		document.addEventListener('mouseup', disableDrag, false);
+		document.addEventListener('mousemove', moveMap, false);
+	}, false);
 	
 	// add zoom buttons
 	var zoomInButton = document.createElement('div');
@@ -563,7 +562,7 @@ Mapiator.W3CController = function( map ) {
 	s.top = '15px';
 	s.textAlign = 'center';
 	s.backgroundColor = '#aaa';
-	mapDiv.appendChild( zoomInButton );
+	map.mapDiv.appendChild( zoomInButton );
 	zoomInButton.addEventListener('mouseup', function(){map.zoomIn();}, false);
 	
 	var zoomOutButton = document.createElement('div');
@@ -577,6 +576,6 @@ Mapiator.W3CController = function( map ) {
 	s.top = '55px';
 	s.textAlign = 'center';
 	s.backgroundColor = '#aaa';
-	mapDiv.appendChild( zoomOutButton );
+	map.mapDiv.appendChild( zoomOutButton );
 	zoomOutButton.addEventListener('mouseup', function(){map.zoomOut();}, false);
 };
