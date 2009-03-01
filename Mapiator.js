@@ -124,13 +124,13 @@ Mapiator.CanvasTile = function(x, y, zoom, ox, oy, map) {
 	this['id'] = Mapiator.CanvasTile.idFor(x,y,zoom);
 
 	var tilesPerRow = (1<<zoom);
-	// check if any of the paths' and polygons' bounding box is on this tile:
+	// check if any of the paths' and polygons' bounding box overlaps this tile:
 	var drawTile = false;
 	for( id in map._pathsAndPolygons) {
 		var pathOrPolygon = map._pathsAndPolygons[id];
 		var l = pathOrPolygon.bbLeft+0.5, t = pathOrPolygon.bbTop + 0.5, r = pathOrPolygon.bbRight+0.5, b = pathOrPolygon.bbBottom+0.5;
 		var tl = x/tilesPerRow,           tt = y/tilesPerRow,            tr = (x+1)/tilesPerRow,        tb = (y+1)/tilesPerRow; 
-		if( (l>=tl && l<=tr || r>=tl && r<=tr) && (t>=tt && t<=tb || b>=tt && b<=tb) ) {
+		if( l<=tr && r>=tl && t<=tb && b>=tt ) {
 			drawTile = true;
 			break;
 		}
