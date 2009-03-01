@@ -451,7 +451,7 @@ Mapiator.Map = function( divId ) {
 	};
 	
 	this.overlayLayer = new Mapiator.OverlayLayer(this);
-	Mapiator.W3CController( this );
+	if( !IE ) Mapiator.W3CController( this );
 };
 
 Mapiator.PathOrPolygon = function( points ) {
