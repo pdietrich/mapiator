@@ -124,13 +124,13 @@ Mapiator.CanvasTile = function(x, y, zoom, ox, oy, map) {
 	this['id'] = Mapiator.CanvasTile.idFor(x,y,zoom);
 
 	var tilesPerRow = (1<<zoom);
-	// check if any of the paths' and polygons' bounding box is on this tile:
+	// check if any of the paths' and polygons' bounding box overlaps this tile:
 	var drawTile = false;
 	for( id in map._pathsAndPolygons) {
 		var pathOrPolygon = map._pathsAndPolygons[id];
 		var l = pathOrPolygon.bbLeft+0.5, t = pathOrPolygon.bbTop + 0.5, r = pathOrPolygon.bbRight+0.5, b = pathOrPolygon.bbBottom+0.5;
 		var tl = x/tilesPerRow,           tt = y/tilesPerRow,            tr = (x+1)/tilesPerRow,        tb = (y+1)/tilesPerRow; 
-		if( (l>=tl && l<=tr || r>=tl && r<=tr) && (t>=tt && t<=tb || b>=tt && b<=tb) ) {
+		if( l<=tr && r>=tl && t<=tb && b>=tt ) {
 			drawTile = true;
 			break;
 		}
@@ -538,18 +538,17 @@ Mapiator.W3CController = function( map ) {
 		xmove = e.clientX;
 		ymove = e.clientY;
 	}
-	mapDiv.addEventListener('mousedown', function(e){
-		e.preventDefault();
-		mapDiv.addEventListener('mousemove', moveMap, false);
-	}, false);
 	function disableDrag(e){
 		e.preventDefault();
 		var undef;
 		xmove = undef;
-		mapDiv.removeEventListener('mousemove', moveMap, false);
+		document.removeEventListener('mousemove', moveMap, false);
 	}
-	mapDiv.addEventListener('mouseup', disableDrag, false);
-	mapDiv.addEventListener('mouseout', disableDrag, false);
+	map.mapDiv.addEventListener('mousedown', function(e){
+		e.preventDefault();
+		document.addEventListener('mouseup', disableDrag, false);
+		document.addEventListener('mousemove', moveMap, false);
+	}, false);
 	
 	// add zoom buttons
 	var zoomInButton = document.createElement('div');
@@ -563,7 +562,7 @@ Mapiator.W3CController = function( map ) {
 	s.top = '15px';
 	s.textAlign = 'center';
 	s.backgroundColor = '#aaa';
-	mapDiv.appendChild( zoomInButton );
+	map.mapDiv.appendChild( zoomInButton );
 	zoomInButton.addEventListener('mouseup', function(){map.zoomIn();}, false);
 	
 	var zoomOutButton = document.createElement('div');
@@ -577,6 +576,6 @@ Mapiator.W3CController = function( map ) {
 	s.top = '55px';
 	s.textAlign = 'center';
 	s.backgroundColor = '#aaa';
-	mapDiv.appendChild( zoomOutButton );
+	map.mapDiv.appendChild( zoomOutButton );
 	zoomOutButton.addEventListener('mouseup', function(){map.zoomOut();}, false);
 };
