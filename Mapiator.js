@@ -106,6 +106,12 @@ Mapiator.util = {
 				(this.centerY()-0.5*mapExtendInPx)/mapExtendInPx
 			);
 		};
+		this.latLngAt = function(pX, pY) {
+			return util.inverseProject(
+				(this.left + pX - 0.5*mapExtendInPx)/mapExtendInPx,
+				(this.top + pY - 0.5*mapExtendInPx)/mapExtendInPx
+			);
+		};
 		this.move(0,0);
 	}
 };
@@ -362,12 +368,12 @@ Mapiator.Map = function( divId ) {
 	var visibleArea;
 
 	var centerLat, centerLng;
-	this.setZoomLevel = function( level ) {
+	this.setZoomLevel = function( level, pX, pY ) {
 		if( visibleArea ){
 			// we are changing the zoom level but the map may have been panned around
 			// but the current center is only stored in pixel coordinates which are different
 			// for every zoom level. Therefor we recalculate the centerLat and centerLng:
-			var ll = visibleArea.centerLatLng();
+			var ll = pX ? visibleArea.latLngAt( pX, pY ) : visibleArea.centerLatLng();
 			centerLat = ll[0];
 			centerLng = ll[1];
 			visibleArea = null;
@@ -375,9 +381,12 @@ Mapiator.Map = function( divId ) {
 		this.zoom = level;
 		this.mapExtendInPx = this.tileSizeInPx * (1<<this.zoom);
 	};
-	this.zoomIn = function() {
+	// pX and pY are optional pixel coordinates. If set they
+	// define the center of the map after the zoom. Otherwise
+	// the center will be the same as before the zoom
+	this.zoomIn = function(pX, pY) {
 		if( this.zoom >= this.maxZoom ) return;
-		this.setZoomLevel( this.zoom + 1);
+		this.setZoomLevel( this.zoom + 1, pX, pY);
 		this.redraw();
 	};
 	this.zoomOut = function() {
@@ -529,7 +538,8 @@ Mapiator.parseWKT = function( wkt ) {
 };
 
 Mapiator.W3CController = function( map ) {
-	var mapDiv = map.mapDiv;
+	
+	// panning:
 	var xmove, ymove;
 	function moveMap(e) {
 		e.preventDefault();
@@ -550,6 +560,18 @@ Mapiator.W3CController = function( map ) {
 		document.addEventListener('mousemove', moveMap, false);
 	}, false);
 	
+	// double click zoom:
+	map.mapDiv.addEventListener('dblclick', function(e){
+		var el = map.mapDiv;
+		var mapX = 0, mapY = 0;
+		do {
+			mapX += el.offsetLeft;
+			mapY += el.offsetTop;
+		} while( el = el.offsetParent );
+		map.zoomIn( e.pageX-mapX, e.pageY-mapY );
+	}, false);
+	
+	
 	// add zoom buttons
 	var zoomInButton = document.createElement('div');
 	zoomInButton.innerHTML = '+';
@@ -564,6 +586,7 @@ Mapiator.W3CController = function( map ) {
 	s.backgroundColor = '#aaa';
 	map.mapDiv.appendChild( zoomInButton );
 	zoomInButton.addEventListener('mouseup', function(){map.zoomIn();}, false);
+	zoomInButton.addEventListener('dblclick', function(e){e.stopPropagation();}, false);
 	
 	var zoomOutButton = document.createElement('div');
 	zoomOutButton.innerHTML = '-'
@@ -578,4 +601,5 @@ Mapiator.W3CController = function( map ) {
 	s.backgroundColor = '#aaa';
 	map.mapDiv.appendChild( zoomOutButton );
 	zoomOutButton.addEventListener('mouseup', function(){map.zoomOut();}, false);
+	zoomOutButton.addEventListener('dblclick', function(e){e.stopPropagation();}, false);
 };
