@@ -10,13 +10,11 @@ What is Mapiator?
 ------------------
 
 Mapiator is a online mapping application like <a href="http://maps.google.com">Google Maps</a> or
-<a href="http://openlayers.org">Openlayers</a>. You can use it without any charge.
-
-It was created by Patrick Dietrich in February 2009.
+<a href="http://openlayers.org">Openlayers</a>. You can use it without any charge. It was created by Patrick Dietrich in February 2009.
 
 Try it:
 
-<div id="map" style="width:660px; height:350px; position:relative; margin-left:50px;">
+<div id="map" style="width:760px; height:350px; position:relative;">
 </div>
 
 
@@ -49,7 +47,7 @@ What are Mapiator's main featues?
 * it can draw your paths and polygons (currently not in IE, yet)
 * you can attach any DOM element to a fixed geo position (latitute and longitude) on the map (e.g. to add a marker)
 * it has a clean and simple JavaScript API
-* it is very small (only about 500 lines of JavaScript code)
+* it is very small (only about 600 lines of JavaScript code)
 * it runs on standard conform browsers including inlcuding Firefox, Safari (also on iPhone) and Google Chrome
 * it can read WKT strings from geo databases like <a href="http://postgis.refractions.net/">PostGIS</a> to display paths and polygons
 
@@ -93,6 +91,31 @@ element.addEventListener('click', function(e){
 Drawing paths and polygons
 ----------------------------
 
+{% highlight javascript %}
+var path = Mapiator.Path( [[50.0, 9.0], [50.0, 12.0], [48.1, 11.6]] );
+                          // list of [lat, lng] pairs
+map.addElement( path );
+
+var poly = Mapiator.Polygon( [[50.0, 7.0], [50.0, 10.0], [48.13, 9.57]] );
+map.addElement( poly );
+{% endhighlight %}
+
+You can append further points at the end of a path:
+
+{% highlight javascript %}
+path.appendPoint( 51.2, 10.3 ); // lat, lng
+map.redraw(); // make sure the map displayes the updated path
+{% endhighlight %}
+
+Or modify the list of points directly:
+
+{% highlight javascript %}
+path.points[1] = [43.0, 12.1]; // lat, lng
+path.recalc(); // always do this! forgetting it may leed to display errors
+map.redraw();
+{% endhighlight %}
+
+
 To draw a path or a polygon from WKT data do:
 
 {% highlight javascript %}
@@ -110,7 +133,25 @@ path.strokeWidth = 5; // pixels
 path.strokeStyle = 'rgba(0, 100, 0, 0.5)'; // YES! transparency is supported!
 
 poly.fillStyle = 'rgba(0, 0, 100, 0.5)';
+map.redraw();
 {% endhighlight %}
+
+Changing the tiles
+-------------------
+
+To load different tiles you need to write a function which returns the tile url for given x, y and zoom values. E.g.:
+
+{% highlight javascript %}
+map.getTileUrl = function(x, y, zoom){
+  // return url for Open Street Map tile:
+  return 'http://b.tile.openstreetmap.org/'+zoom+'/'+x+'/'+y+'.png';
+};
+{% endhighlight %}
+
+If you want to learn about how the x, y and zoom values correspond to a position on the map or how tiles
+are created I recommend you read this article:
+
+<a href="http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection/">Tiles à la Google Maps: Coordinates, Tile Bounds and Projection</a>
 
 
 {% include mapiator_js.html %}
