@@ -43,7 +43,7 @@ What are Mapiator's main featues?
 -----------------------------------
 
 * it can be used with a wide range of different map tiles, e.g. with <a href="http://www.openstreetmap.org/">Open Street Map</a> or the really great ones from <a href="http://www.maps-for-free.com/">maps-for-free.com</a>
-* it can be moved around with the mouse ("panning", except in IE6) and zoomed in and out
+* it can be moved around with the mouse ("panning") and zoomed in and out
 * it can draw your paths and polygons (currently not in IE, yet)
 * you can attach any DOM element to a fixed geo position (latitute and longitude) on the map (e.g. to add a marker)
 * it has a clean and simple JavaScript API
@@ -55,7 +55,6 @@ What features are missing?
 ------------------------------
 
 * drawing paths and polygons does not work in IE, yet
-* moving the map with the mouse ("panning"), does not work in IE6, yet
 * wrapping the map at the date border is not implemented, yet
 * zoom level 0 and 1 (the ones zoomed out furthest) are not as nice, yet
 
