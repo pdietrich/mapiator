@@ -351,12 +351,96 @@ Mapiator.TileLayer = function(map, visibleArea, TileConstructor){
 		map.movableContainer.removeChild( tileContainer );
 	}
 };
-	
+
+Mapiator.PathOrPolygon = function( points ) {
+	this['id'] = Mapiator.PathOrPolygon._nextID++;
+    this.points = points || [];
+	this.appendPoint = function( lat, lng ) {
+		this.points[this.points.length] = [lat,lng];
+	};
+	this.recalc = function() {
+		this.projectedPoints = [];
+		var l,t,r,b;
+		var p = this.points;
+		for(var i=0; i < p.length; ++i){
+			var pp = this.projectedPoints[i] = Mapiator.util.project(p[i][0], p[i][1]);
+			l = (l && l<pp[0]) ? l : pp[0];
+			t = (t && t<pp[1]) ? t : pp[1];
+			r = (r && r>pp[0]) ? r : pp[0];
+			b = (b && b>pp[1]) ? b : pp[1];				
+		}
+		this.bbLeft = l;
+		this.bbTop = t;
+		this.bbRight = r;
+		this.bbBottom = b;
+		// console.log('l=',l,'t=',t,'r=',r,'b=',b);
+	};
+};
+Mapiator.PathOrPolygon._nextID = 1;
+
+Mapiator.Path = function( points ) {
+	Mapiator.PathOrPolygon.apply( this, points );
+}
+Mapiator.Path.prototype = {
+	type: 'Path',
+	strokeStyle: "rgba(0,0,0, 1.0)",
+	strokeWidth: 2.0
+};
+
+Mapiator.Polygon = function( points ) {
+	Mapiator.PathOrPolygon.apply( this, points );
+}
+Mapiator.Polygon.prototype = {
+	type: 'Polygon',
+	// strokeStyle: "rgba(0,0,0, 1.0)",
+	fillStyle: "rgba(0,0,0, 1.0)"
+};
+
+Mapiator.parseWKT = function( wkt ) {
+	var Point = function( lat,lng ) {
+		this['id'] = Mapiator.PathOrPolygon._nextID++;
+        this.lat = lat;
+        this.lng = lng;
+    };
+	Point.prototype = {type:'POINT'};
+
+    regex = {
+        point: /^\s*POINT\s*\(\s*(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s*\)\s*$/i, // POINT (11.5757639569603175 48.1365236143369373)
+        lineString: /^LINESTRING\s*\((.*)\)\s*$/i, // LINESTRING (11.5752 48.1372, 11.5750 48.1376, 11.5756 48.1371)
+		polygon: /^POLYGON\s*\((.*)\)\s*$/i // POLYGON (11.5752 48.1372, 11.5750 48.1376, 11.5756 48.1371)
+    };
+
+	var m;
+       if( m = regex.point.exec( wkt ) ){
+           return new Point( parseFloat(m[2]), parseFloat(m[1]) );
+       }
+       else {
+		var p;
+		if( m = regex.lineString.exec( wkt ) ){
+			p = new Mapiator.Path();
+        }
+		else if( m = regex.polygon.exec( wkt ) ){
+			p = new Mapiator.Polygon();
+		}
+		else return null;
+		
+		var pointStrings = m[1].split(/\s*,\s*/);
+		Mapiator.util.forEach( pointStrings, function(ps){
+			var m2;
+			if( m2 = /^\s*(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s*$/.exec(ps) )
+				p.appendPoint( parseFloat(m2[2]), parseFloat(m2[1]) );
+		});
+		p.recalc();
+		return p;
+	}
+};
+
 Mapiator.Map = function( divId ) {
 	var util = Mapiator.util;
 	var self = this;
 	
 	var IE='\v'=='v'; // detect IE
+	this.IE = IE;
 	
 	this.tileSizeInPx;
 	this.maxZoom = 18;
@@ -451,92 +535,87 @@ Mapiator.Map = function( divId ) {
 	};
 	
 	this.overlayLayer = new Mapiator.OverlayLayer(this);
-	if( !IE ) Mapiator.W3CController( this );
+	// if( !IE ) Mapiator.W3CController( this );
+	Mapiator.TraditionalController( this );
 };
 
-Mapiator.PathOrPolygon = function( points ) {
-	this['id'] = Mapiator.PathOrPolygon._nextID++;
-    this.points = points || [];
-	this.appendPoint = function( lat, lng ) {
-		this.points[this.points.length] = [lat,lng];
-	};
-	this.recalc = function() {
-		this.projectedPoints = [];
-		var l,t,r,b;
-		var p = this.points;
-		for(var i=0; i < p.length; ++i){
-			var pp = this.projectedPoints[i] = Mapiator.util.project(p[i][0], p[i][1]);
-			l = (l && l<pp[0]) ? l : pp[0];
-			t = (t && t<pp[1]) ? t : pp[1];
-			r = (r && r>pp[0]) ? r : pp[0];
-			b = (b && b>pp[1]) ? b : pp[1];				
-		}
-		this.bbLeft = l;
-		this.bbTop = t;
-		this.bbRight = r;
-		this.bbBottom = b;
-		// console.log('l=',l,'t=',t,'r=',r,'b=',b);
-	};
-};
-Mapiator.PathOrPolygon._nextID = 1;
-
-Mapiator.Path = function( points ) {
-	Mapiator.PathOrPolygon.apply( this, points );
-}
-Mapiator.Path.prototype = {
-	type: 'Path',
-	strokeStyle: "rgba(0,0,0, 1.0)",
-	strokeWidth: 2.0
-};
-
-Mapiator.Polygon = function( points ) {
-	Mapiator.PathOrPolygon.apply( this, points );
-}
-Mapiator.Polygon.prototype = {
-	type: 'Polygon',
-	// strokeStyle: "rgba(0,0,0, 1.0)",
-	fillStyle: "rgba(0,0,0, 1.0)"
-};
-
-Mapiator.parseWKT = function( wkt ) {
-	var Point = function( lat,lng ) {
-		this['id'] = Mapiator.PathOrPolygon._nextID++;
-        this.lat = lat;
-        this.lng = lng;
-    };
-	Point.prototype = {type:'POINT'};
-
-    regex = {
-        point: /^\s*POINT\s*\(\s*(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s*\)\s*$/i, // POINT (11.5757639569603175 48.1365236143369373)
-        lineString: /^LINESTRING\s*\((.*)\)\s*$/i, // LINESTRING (11.5752 48.1372, 11.5750 48.1376, 11.5756 48.1371)
-		polygon: /^POLYGON\s*\((.*)\)\s*$/i // POLYGON (11.5752 48.1372, 11.5750 48.1376, 11.5756 48.1371)
-    };
-
-	var m;
-       if( m = regex.point.exec( wkt ) ){
-           return new Point( parseFloat(m[2]), parseFloat(m[1]) );
-       }
-       else {
-		var p;
-		if( m = regex.lineString.exec( wkt ) ){
-			p = new Mapiator.Path();
-        }
-		else if( m = regex.polygon.exec( wkt ) ){
-			p = new Mapiator.Polygon();
-		}
-		else return null;
-		
-		var pointStrings = m[1].split(/\s*,\s*/);
-		Mapiator.util.forEach( pointStrings, function(ps){
-			var m2;
-			if( m2 = /^\s*(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s*$/.exec(ps) )
-				p.appendPoint( parseFloat(m2[2]), parseFloat(m2[1]) );
-		});
-		p.recalc();
-		return p;
+Mapiator.TraditionalController = function( map ) {
+	// panning:
+	var xmove, ymove;
+	function moveMap(e) {
+		if( map.IE ) e = window.event;
+		else e.preventDefault();
+		if( typeof xmove != 'undefined' )
+			map.moveByPx( e.clientX - xmove, e.clientY - ymove );
+		xmove = e.clientX;
+		ymove = e.clientY;
 	}
+	function disableDrag(e){
+		if( map.IE ) e = window.event;
+		else e.preventDefault();
+		var undef;
+		xmove = undef;
+		document.onmousemove = null;
+	}
+	map.mapDiv.onmousedown = function(e){
+		if( map.IE ) e = window.event;
+		else e.preventDefault();
+		document.onmouseup = disableDrag;
+		document.onmousemove = moveMap;
+	};
+	
+	// double click zoom:
+	map.mapDiv.ondblclick = function(e){
+		if( map.IE ) e = window.event;
+		var el = map.mapDiv;
+		var mapX = 0, mapY = 0;
+		do {
+			mapX += el.offsetLeft;
+			mapY += el.offsetTop;
+		} while( el = el.offsetParent );
+		// alert( e.pageX );
+		var x = (e.pageX||e.clientX)-mapX, y = (e.pageY||e.clientY)-mapY; // this will not work properly in IE if the page is scrolled!
+		map.zoomIn( x, y );
+	};
+	
+	// add zoom buttons
+	var zoomInButton = document.createElement('div');
+	zoomInButton.innerHTML = '+';
+	var s = zoomInButton.style;
+	s.position = 'absolute';
+	s.zIndex = '30';
+	s.width = '30px';
+	s.height = '30px';
+	s.left = '15px';
+	s.top = '15px';
+	s.textAlign = 'center';
+	s.backgroundColor = '#aaa';
+	map.mapDiv.appendChild( zoomInButton );
+	zoomInButton.onmouseup = function(){map.zoomIn();};
+	
+	var zoomOutButton = document.createElement('div');
+	zoomOutButton.innerHTML = '-'
+	s = zoomOutButton.style;
+	s.position = 'absolute';
+	s.zIndex = '30';
+	s.width = '30px';
+	s.height = '30px';
+	s.left = '15px';
+	s.top = '55px';
+	s.textAlign = 'center';
+	s.backgroundColor = '#aaa';
+	map.mapDiv.appendChild( zoomOutButton );
+	zoomOutButton.onmouseup = function(){map.zoomOut();};
+	
+	function preventDblClick(e){
+		if( map.IE ) window.event.cancelBubble=true
+		else e.stopPropagation();
+	};
+	zoomInButton.ondblclick = preventDblClick;
+	zoomOutButton.ondblclick = preventDblClick;
 };
 
+/*
 Mapiator.W3CController = function( map ) {
 	
 	// panning:
@@ -603,3 +682,4 @@ Mapiator.W3CController = function( map ) {
 	zoomOutButton.addEventListener('mouseup', function(){map.zoomOut();}, false);
 	zoomOutButton.addEventListener('dblclick', function(e){e.stopPropagation();}, false);
 };
+*/
