@@ -48,7 +48,7 @@ What are Mapiator's main featues?
 * you can attach any DOM element to a fixed geo position (latitute and longitude) on the map (e.g. to add a marker)
 * it has a clean and simple JavaScript API
 * it is very small (only about 600 lines of JavaScript code)
-* it runs on standard conform browsers including inlcuding Firefox, Safari (also on iPhone) and Google Chrome
+* it runs on standard conform browsers including Firefox, Safari (also on iPhone) and Google Chrome
 * it can read WKT strings from geo databases like <a href="http://postgis.refractions.net/">PostGIS</a> to display paths and polygons
 
 What features are missing?
