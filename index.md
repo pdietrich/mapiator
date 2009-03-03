@@ -9,7 +9,7 @@ Welcome to Mapiator
 What is Mapiator?
 ------------------
 
-Mapiator is a online mapping application like <a href="http://maps.google.com">Google Maps</a> or
+Mapiator is an online mapping application like <a href="http://maps.google.com">Google Maps</a> or
 <a href="http://openlayers.org">Openlayers</a>. You can use it without any charge. It was created by Patrick Dietrich in February 2009.
 
 Try it:
