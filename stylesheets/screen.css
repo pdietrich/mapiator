@@ -19,8 +19,9 @@ h1 {
     margin-bottom: 3px;
 }
 
-h1 .small {
-    font-size: 0.4em;
+h1 span.subtitle {
+	display:block;
+	font-size: 0.4em;
 }
 
 h1 a {

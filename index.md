@@ -3,8 +3,12 @@ title: Mapiator - the straight forward online mapping application
 layout: home
 ---
 
-Welcome to Mapiator
-====================
+<h1>
+	<a href="http://pdietrich.github.com/mapiator/">
+		Mapiator
+		<span class="subtitle">the straight forward online mapping application</span>
+	</a>
+</h1>
 
 What is Mapiator?
 ------------------
