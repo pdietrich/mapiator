@@ -1,5 +1,5 @@
 ---
-title: Mapiator
+title: Mapiator - the straight forward online mapping application
 layout: home
 ---
 
