@@ -441,6 +441,8 @@ Mapiator.Map = function( divId ) {
 	
 	var IE='\v'=='v'; // detect IE
 	this.IE = IE;
+	var ua = navigator.userAgent;
+	this.iPhone = ua.match(/iPhone/i) || ua.match(/iPod/i);
 	
 	this.tileSizeInPx;
 	this.maxZoom = 18;
@@ -535,8 +537,8 @@ Mapiator.Map = function( divId ) {
 	};
 	
 	this.overlayLayer = new Mapiator.OverlayLayer(this);
-	// if( !IE ) Mapiator.W3CController( this );
-	Mapiator.TraditionalController( this );
+	if( this.iPhone ) Mapiator.iPhoneController( this );
+	else Mapiator.TraditionalController( this );
 };
 
 Mapiator.TraditionalController = function( map ) {
@@ -615,71 +617,36 @@ Mapiator.TraditionalController = function( map ) {
 	zoomOutButton.ondblclick = preventDblClick;
 };
 
-/*
-Mapiator.W3CController = function( map ) {
+Mapiator.iPhoneController = function(map) {
+	var currentX, currentY;
+	var mapDiv = map.mapDiv;
+    mapDiv.addEventListener( 'touchstart', function(e){
+        if(e.touches.length == 1){ // Only deal with one finger
+            var touch = e.touches[0]; // Get the information for finger #1
+            currentX = touch.pageX;
+            currentY = touch.pageY;
+        } 
+    });
+
+    mapDiv.addEventListener( 'touchmove', function(e){
+        e.preventDefault();
+        if(e.touches.length == 1){
+            var touch = e.touches[0];
+            diffX = touch.pageX - currentX;
+            diffY = touch.pageY - currentY;
+
+            map.moveByPx(diffX,diffY);
+
+            currentX = touch.pageX;
+            currentY = touch.pageY;
+        }
+    });
+
+	// zoom:
+    mapDiv.addEventListener( 'gestureend', function(e){
+        // note: this does not work if the default is prevented!
+        if( e.scale > 1) map.zoomIn();
+        if( e.scale < 1) map.zoomOut();
+    });
 	
-	// panning:
-	var xmove, ymove;
-	function moveMap(e) {
-		e.preventDefault();
-		if( typeof xmove != 'undefined' )
-			map.moveByPx( e.clientX - xmove, e.clientY - ymove );
-		xmove = e.clientX;
-		ymove = e.clientY;
-	}
-	function disableDrag(e){
-		e.preventDefault();
-		var undef;
-		xmove = undef;
-		document.removeEventListener('mousemove', moveMap, false);
-	}
-	map.mapDiv.addEventListener('mousedown', function(e){
-		e.preventDefault();
-		document.addEventListener('mouseup', disableDrag, false);
-		document.addEventListener('mousemove', moveMap, false);
-	}, false);
-	
-	// double click zoom:
-	map.mapDiv.addEventListener('dblclick', function(e){
-		var el = map.mapDiv;
-		var mapX = 0, mapY = 0;
-		do {
-			mapX += el.offsetLeft;
-			mapY += el.offsetTop;
-		} while( el = el.offsetParent );
-		map.zoomIn( e.pageX-mapX, e.pageY-mapY );
-	}, false);
-	
-	
-	// add zoom buttons
-	var zoomInButton = document.createElement('div');
-	zoomInButton.innerHTML = '+';
-	var s = zoomInButton.style;
-	s.position = 'absolute';
-	s.zIndex = '30';
-	s.width = '30px';
-	s.height = '30px';
-	s.left = '15px';
-	s.top = '15px';
-	s.textAlign = 'center';
-	s.backgroundColor = '#aaa';
-	map.mapDiv.appendChild( zoomInButton );
-	zoomInButton.addEventListener('mouseup', function(){map.zoomIn();}, false);
-	zoomInButton.addEventListener('dblclick', function(e){e.stopPropagation();}, false);
-	
-	var zoomOutButton = document.createElement('div');
-	zoomOutButton.innerHTML = '-'
-	s = zoomOutButton.style;
-	s.position = 'absolute';
-	s.zIndex = '30';
-	s.width = '30px';
-	s.height = '30px';
-	s.left = '15px';
-	s.top = '55px';
-	s.textAlign = 'center';
-	s.backgroundColor = '#aaa';
-	map.mapDiv.appendChild( zoomOutButton );
-	zoomOutButton.addEventListener('mouseup', function(){map.zoomOut();}, false);
-	zoomOutButton.addEventListener('dblclick', function(e){e.stopPropagation();}, false);
-};
-*/
+}
