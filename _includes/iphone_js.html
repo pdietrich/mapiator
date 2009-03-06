@@ -1,0 +1,22 @@
+<script type="text/javascript">
+// <!--
+if( navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i) ) { 
+
+	var deg= 1;
+	var updateLayout = function() {
+		if( deg != window.orientation ) {
+			deg = window.orientation;
+			var orient = deg ? 'landscape' : 'portrait';
+			document.body.setAttribute("orient", orient);
+			map.redraw();
+		}
+	};
+
+	addEventListener('load', function(){
+		updateLayout();
+		setTimeout( window.scrollTo, 0, 0, 1);
+	});
+	setInterval(updateLayout, 500);
+}
+// -->
+</script>

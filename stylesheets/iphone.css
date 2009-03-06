@@ -1,0 +1,54 @@
+h1 {
+	font-size: 2em;
+}
+
+h2 {
+	font-size: 1.2em;
+}
+
+body {
+    background-color: #fff;
+	font-size: 10pt;
+	-webkit-text-size-adjust: none;
+}
+
+#container {
+	overflow: hidden;
+	width: 310px;
+	padding: 5px;
+}
+
+
+body[orient="portrait"] #container {
+	width: 310px !important;
+}
+
+body[orient="landscape"] #container {
+	width: 470px;
+}
+
+
+#map {
+	width:310px;
+	height:200px;
+	background-color: black;
+}
+
+
+body[orient="portrait"] #map {
+	width:310px !important;
+	height:200px;
+}
+
+
+body[orient="landscape"] #map {
+	width:470px;
+	height:200px;
+}
+
+
+.highlight {
+	position: relative;
+	width: 600px;
+	padding: 5px;
+}

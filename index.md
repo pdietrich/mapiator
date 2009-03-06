@@ -18,7 +18,7 @@ Mapiator is an online mapping application like <a href="http://maps.google.com">
 
 Try it:
 
-<div id="map" style="width:760px; height:350px; position:relative;">
+<div id="map">
 </div>
 
 
@@ -157,7 +157,9 @@ are created I recommend you read this article:
 <a href="http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection/">Tiles à la Google Maps: Coordinates, Tile Bounds and Projection</a>
 
 
+{% include iphone_js.html %}
 {% include mapiator_js.html %}
+
 
 
 

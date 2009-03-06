@@ -13,8 +13,14 @@ body {
     width: 760px;
 }
 
+#map {
+	width:760px;
+	height:350px;
+	position:relative;
+}
+
 h1 {
-    font-size: 3.8em;
+    font-size: 3.2em;
     color: #1d1e06;
     margin-bottom: 3px;
 }
