@@ -5,8 +5,19 @@
 <script type="text/javascript" src="javascripts/Mapiator.js">
 </script>
 <script type="text/javascript">
+// <!--
 	var map = new Mapiator.Map('map');
 	map.setZoomLevel( 3 );
 	map.setCenter(48.0, 10.0); // latitude, longitude
+	
+	var test = document.createElement('div');
+	test.onclick = function(){
+		alert('Hey, you have found Atlantis!');
+	};
+	// set an id so the element can be styled with CSS easily:
+	test.id = 'test_poi';
+	map.overlayLayer.addElement(test, 49, -12.0);
+	
 	map.redraw();
+// -->
 </script>
