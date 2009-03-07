@@ -389,6 +389,7 @@ Mapiator.PathOrPolygon = function( points ) {
 		this.bbBottom = b;
 		// console.log('l=',l,'t=',t,'r=',r,'b=',b);
 	};
+	this.recalc();
 };
 Mapiator.PathOrPolygon._nextID = 1;
 
