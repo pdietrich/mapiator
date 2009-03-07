@@ -22,12 +22,14 @@ body {
 h1 {
     font-size: 3.2em;
     color: #1d1e06;
-    margin-bottom: 3px;
+    margin-bottom: 35px;
 }
 
 h1 span.subtitle {
 	display:block;
 	font-size: 0.4em;
+	font-style: italic;
+	padding-left: 1em;
 }
 
 h1 a {
@@ -69,4 +71,11 @@ a {
 	width: 16px;
 	height: 16px;
 	background-color: red;
+}
+
+#fork_me {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: 0;
 }
