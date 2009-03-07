@@ -18,6 +18,21 @@
 	test.id = 'test_poi';
 	map.overlayLayer.addElement(test, 49, -12.0);
 	
+	var path = new Mapiator.Path([
+		[52.518333, 13.408333], // Berlin
+		[50.846667, 4.3525], // Brussels
+		[48.862222, 2.350833], // Paris
+		[47.378886, 8.540007], // Zurich
+		[41.883333, 12.483333] // Rome
+	]);
+	path.strokeWidth = 3;
+	path.strokeStyle = 'rgba(0, 0, 200, 0.9)';
+	map.addElement( path );
+	
+	var poly = Mapiator.parseWKT( "Polygon (7 50, 10 50, 9.5756 48.1371)" );
+	poly.fillStyle = 'rgba(0, 0, 100, 0.5)';
+	map.addElement( poly );
+	
 	map.redraw();
 // -->
 </script>

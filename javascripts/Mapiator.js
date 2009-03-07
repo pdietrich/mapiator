@@ -8,8 +8,8 @@ Mapiator.util = {
 	byId: function(str) {
 		return document.getElementById(str);
 	},
-	copy: function(obj) {
-		var c = {};
+	copy: function(obj, c) {
+		if(!c) c = {};
 		for( k in obj ) c[k] = obj[k];
 		return c;
 	},
@@ -143,10 +143,24 @@ Mapiator.CanvasTile = function(x, y, zoom, ox, oy, map) {
 	}
 	if( !drawTile ) return;
 	
-	this.domElement = document.createElement('canvas');
-	this.domElement.width = map.tileSizeInPx;
-	this.domElement.height = map.tileSizeInPx;
-	this.domElement.id = this['id'];
+	var el = document.createElement('canvas');
+	el.width = map.tileSizeInPx;
+	el.height = map.tileSizeInPx;
+	el.id = this['id'];
+	
+	// we need to init this for IE
+	if (typeof G_vmlCanvasManager != "undefined") {
+	  	// temporarily add the element to the dom
+		document.body.appendChild(el);
+		G_vmlCanvasManager.initElement(el);
+		el = null;
+		// get the replacement:
+		this.domElement = util.byId(this['id']);
+		// and remove it again:
+		document.body.removeChild(this.domElement);
+	}
+	else this.domElement = el;
+	
 	var s = this.domElement.style;
 	s.position = 'absolute';
 	s.zIndex = '5';
@@ -375,11 +389,12 @@ Mapiator.PathOrPolygon = function( points ) {
 		this.bbBottom = b;
 		// console.log('l=',l,'t=',t,'r=',r,'b=',b);
 	};
+	this.recalc();
 };
 Mapiator.PathOrPolygon._nextID = 1;
 
 Mapiator.Path = function( points ) {
-	Mapiator.PathOrPolygon.apply( this, points );
+	Mapiator.PathOrPolygon.call( this, points );
 }
 Mapiator.Path.prototype = {
 	type: 'Path',
@@ -388,7 +403,7 @@ Mapiator.Path.prototype = {
 };
 
 Mapiator.Polygon = function( points ) {
-	Mapiator.PathOrPolygon.apply( this, points );
+	Mapiator.PathOrPolygon.call( this, points );
 }
 Mapiator.Polygon.prototype = {
 	type: 'Polygon',
@@ -411,10 +426,10 @@ Mapiator.parseWKT = function( wkt ) {
     };
 
 	var m;
-       if( m = regex.point.exec( wkt ) ){
-           return new Point( parseFloat(m[2]), parseFloat(m[1]) );
-       }
-       else {
+	if( m = regex.point.exec( wkt ) ){
+		return new Point( parseFloat(m[2]), parseFloat(m[1]) );
+	}
+	else {
 		var p;
 		if( m = regex.lineString.exec( wkt ) ){
 			p = new Mapiator.Path();
@@ -514,7 +529,7 @@ Mapiator.Map = function( divId ) {
 		visibleArea.move( -x,-y );
 		
 		this.tileLayer.showTiles();
-		if( !IE ) this.canvasTileLayer.showTiles();
+		if(!IE) this.canvasTileLayer.showTiles();
 	};
 	
 	this.redraw = function() {
@@ -529,10 +544,11 @@ Mapiator.Map = function( divId ) {
 		if( this.tileLayer ) this.tileLayer.destroy();		
 		this.tileLayer = new Mapiator.TileLayer(this, util.clone(visibleArea), Mapiator.StdTile);
 		
-		if( !IE ) {
+		if(!window.debugPD) {
 			if( this.canvasTileLayer ) this.canvasTileLayer.destroy();
 			this.canvasTileLayer = new Mapiator.TileLayer(this, util.clone(visibleArea), Mapiator.CanvasTile);
 		}
+			
 		this.overlayLayer.redraw();
 	};
 	
