@@ -150,7 +150,6 @@ Mapiator.CanvasTile = function(x, y, zoom, ox, oy, map) {
 	
 	// we need to init this for IE
 	if (typeof G_vmlCanvasManager != "undefined") {
-		alert('IE!');
 	  	// temporarily add the element to the dom
 		document.body.appendChild(el);
 		G_vmlCanvasManager.initElement(el);
@@ -529,7 +528,7 @@ Mapiator.Map = function( divId ) {
 		visibleArea.move( -x,-y );
 		
 		this.tileLayer.showTiles();
-		// this.canvasTileLayer.showTiles();
+		if(!IE) this.canvasTileLayer.showTiles();
 	};
 	
 	this.redraw = function() {
@@ -544,8 +543,10 @@ Mapiator.Map = function( divId ) {
 		if( this.tileLayer ) this.tileLayer.destroy();		
 		this.tileLayer = new Mapiator.TileLayer(this, util.clone(visibleArea), Mapiator.StdTile);
 		
-		if( this.canvasTileLayer ) this.canvasTileLayer.destroy();
-		this.canvasTileLayer = new Mapiator.TileLayer(this, util.clone(visibleArea), Mapiator.CanvasTile);
+		if(!window.debugPD) {
+			if( this.canvasTileLayer ) this.canvasTileLayer.destroy();
+			this.canvasTileLayer = new Mapiator.TileLayer(this, util.clone(visibleArea), Mapiator.CanvasTile);
+		}
 			
 		this.overlayLayer.redraw();
 	};

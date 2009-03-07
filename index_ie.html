@@ -41,6 +41,7 @@
 		<div id="map"></div>
 		<div id="debugOut" style="position:absolute; left:850px; top:0; width:400px;">test123</div>
 	</div>
+	<script type="text/javascript" src="excanvas-compressed.js"></script>
 	<script type="text/javascript" src="Mapiator.js"></script>
 	<script type="text/javascript">
 		var myMap;
@@ -68,11 +69,14 @@
 			poly.fillStyle = 'rgba(0, 0, 100, 0.5)';
 			myMap.addElement( poly );
 			 
-			// var test = document.createElement('div');
-			// test.id = 'test_poi';
-			// test.addEventListener('click', function(e){alert('bitte dieses DIV nicht mehr klicken!');}, false);
-			// myMap.overlayLayer.addElement(test, 48, 10);
+			var test = document.createElement('div');
+			test.id = 'test_poi';
+			test.onclick = function(e){
+				alert('bitte dieses DIV nicht mehr klicken!');
+			};
+			myMap.overlayLayer.addElement(test, 48, 10);
 
+			window.debugPD = true;
 			myMap.redraw();
 			
 		}
