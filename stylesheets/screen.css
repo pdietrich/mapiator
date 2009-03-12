@@ -79,3 +79,19 @@ a {
 	right: 0;
 	border: 0;
 }
+
+div.mapiator_zoom_in, div.mapiator_zoom_out {
+	width: 48px;
+	height: 37px;
+	left: 15px;
+}
+
+div.mapiator_zoom_in {
+	background: url(../images/zoomIn_blur.png);
+	top: 15px;
+}
+
+div.mapiator_zoom_out {
+	background: url(../images/zoomOut_blur.png);
+	top: 55px;
+}

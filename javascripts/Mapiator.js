@@ -598,30 +598,21 @@ Mapiator.TraditionalController = function( map ) {
 	
 	// add zoom buttons
 	var zoomInButton = document.createElement('div');
-	zoomInButton.innerHTML = '+';
+	zoomInButton.setAttribute('class', 'mapiator_zoom_in');
 	var s = zoomInButton.style;
 	s.position = 'absolute';
 	s.zIndex = '30';
-	s.width = '30px';
-	s.height = '30px';
-	s.left = '15px';
-	s.top = '15px';
-	s.textAlign = 'center';
-	s.backgroundColor = '#aaa';
+
 	map.mapDiv.appendChild( zoomInButton );
 	zoomInButton.onmouseup = function(){map.zoomIn();};
 	
 	var zoomOutButton = document.createElement('div');
-	zoomOutButton.innerHTML = '-'
+	zoomOutButton.setAttribute('class', 'mapiator_zoom_out');
+	
 	s = zoomOutButton.style;
 	s.position = 'absolute';
 	s.zIndex = '30';
-	s.width = '30px';
-	s.height = '30px';
-	s.left = '15px';
-	s.top = '55px';
-	s.textAlign = 'center';
-	s.backgroundColor = '#aaa';
+	
 	map.mapDiv.appendChild( zoomOutButton );
 	zoomOutButton.onmouseup = function(){map.zoomOut();};
 	
