@@ -6,7 +6,9 @@
 </script>
 <script type="text/javascript">
 // <!--
-	var map = new Mapiator.Map('map');
+var map;
+window.onload = function() {
+	map = new Mapiator.Map('map');
 	map.setZoomLevel( 3 );
 	map.setCenter(48.0, 10.0); // latitude, longitude
 	
@@ -34,5 +36,6 @@
 	map.addElement( poly );
 	
 	map.redraw();
+}
 // -->
 </script>

@@ -28,6 +28,13 @@ Mapiator.util = {
 			res[i] = fun(array[i]);
 		return res;
 	},
+	appendCSS: function(css, callback) {
+		var style = document.createElement('style');
+		style.innerHTML = css;
+		document.body.appendChild(style);
+		// give browser some time to digest...
+		if( callback ) setTimeout( callback, 1 );
+	},
 	gudermann: function(y) {
 		return 2*Math.atan(Math.exp(y)) - 0.5*Math.PI
 	},
@@ -596,32 +603,31 @@ Mapiator.TraditionalController = function( map ) {
 		map.zoomIn( x, y );
 	};
 	
-	// add zoom buttons
-	var zoomInButton = document.createElement('div');
-	zoomInButton.setAttribute('class', 'mapiator_zoom_in');
-	var s = zoomInButton.style;
-	s.position = 'absolute';
-	s.zIndex = '30';
+	Mapiator.util.appendCSS(
+		".mapiator_zoom_in, .mapiator_zoom_out{position:absolute; z-index:30; width:48px; height:37px; left:15px;}"+
+		".mapiator_zoom_in{background:url(../images/zoomIn_blur.png); top:15px;}"+
+		".mapiator_zoom_out{background:url(../images/zoomOut_blur.png); top:55px;}",
+		function(){
+			// add zoom buttons
+			var zoomInButton = document.createElement('div');
+			zoomInButton.setAttribute('class', 'mapiator_zoom_in');
 
-	map.mapDiv.appendChild( zoomInButton );
-	zoomInButton.onmouseup = function(){map.zoomIn();};
-	
-	var zoomOutButton = document.createElement('div');
-	zoomOutButton.setAttribute('class', 'mapiator_zoom_out');
-	
-	s = zoomOutButton.style;
-	s.position = 'absolute';
-	s.zIndex = '30';
-	
-	map.mapDiv.appendChild( zoomOutButton );
-	zoomOutButton.onmouseup = function(){map.zoomOut();};
-	
-	function preventDblClick(e){
-		if( map.IE ) window.event.cancelBubble=true
-		else e.stopPropagation();
-	};
-	zoomInButton.ondblclick = preventDblClick;
-	zoomOutButton.ondblclick = preventDblClick;
+			map.mapDiv.appendChild( zoomInButton );
+			zoomInButton.onmouseup = function(){map.zoomIn();};
+
+			var zoomOutButton = document.createElement('div');
+			zoomOutButton.setAttribute('class', 'mapiator_zoom_out');
+
+			map.mapDiv.appendChild( zoomOutButton );
+			zoomOutButton.onmouseup = function(){map.zoomOut();};
+
+			function preventDblClick(e){
+				if( map.IE ) window.event.cancelBubble=true
+				else e.stopPropagation();
+			};
+			zoomInButton.ondblclick = preventDblClick;
+			zoomOutButton.ondblclick = preventDblClick;
+	});
 };
 
 Mapiator.iPhoneController = function(map) {

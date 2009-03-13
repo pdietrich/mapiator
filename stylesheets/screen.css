@@ -14,9 +14,10 @@ body {
 }
 
 #map {
+	position:relative;
 	width:760px;
 	height:350px;
-	position:relative;
+	background-color: #000;
 }
 
 h1 {
@@ -33,12 +34,13 @@ h1 span.subtitle {
 }
 
 h1 a {
-    text-decoration: none;
+	color: #1d1e06;
 }
 
 h2 {
     font-size: 1.5em;
     color: #1d1e06;
+	margin-top: 50px;
 }
 
 h3 {
@@ -47,7 +49,12 @@ h3 {
 }
 
 a {
-    color: #1d1e06;
+	text-decoration: none;
+    color: #059;
+}
+
+a:hover {
+	text-decoration: underline;
 }
 
 .description {
@@ -78,20 +85,4 @@ a {
 	top: 0;
 	right: 0;
 	border: 0;
-}
-
-div.mapiator_zoom_in, div.mapiator_zoom_out {
-	width: 48px;
-	height: 37px;
-	left: 15px;
-}
-
-div.mapiator_zoom_in {
-	background: url(../images/zoomIn_blur.png);
-	top: 15px;
-}
-
-div.mapiator_zoom_out {
-	background: url(../images/zoomOut_blur.png);
-	top: 55px;
 }
