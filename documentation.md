@@ -6,10 +6,10 @@ layout: home
 <h1><a href="http://pdietrich.github.com/mapiator/">Mapiator</a> - Documentation</h1>
 
 Here you will find information on:
-* on [adding arbitrary (clickable) elements to the map](#elements)
-* on [creating paths and polygons](#paths_and_polygons)
-* on [manipulating the map with JavaScript](#programmatical)
-* on [loading different tiles](#tiles)
+* [adding arbitrary (clickable) elements to the map](#elements)
+* [creating paths and polygons](#paths_and_polygons)
+* [manipulating the map with JavaScript](#programmatical)
+* [loading different tiles](#tiles)
 
 
 <h2 id="elements">Adding DOM elements to the map</h2>
@@ -127,7 +127,7 @@ map.getTileUrl = function(x, y, zoom){
 {% endhighlight %}
 
 If you want to learn about how the x, y and zoom values correspond to a position on the map or how tiles
-are created I recommend you read this article: [Tiles à la Google Maps: Coordinates, Tile Bounds and Projection](http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection/)
+are created I recommend you read this article: <a href="http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection/" target="#blank">Tiles à la Google Maps: Coordinates, Tile Bounds and Projection</a>
 
 If you want to draw tiles of a size different from 256x256 you need to tell [Mapiator](http://pdietrich.github.com/mapiator/) about it:
 {% highlight javascript %}
