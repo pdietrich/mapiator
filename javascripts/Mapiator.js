@@ -605,8 +605,8 @@ Mapiator.TraditionalController = function( map ) {
 	
 	Mapiator.util.appendCSS(
 		".mapiator_zoom_in, .mapiator_zoom_out{position:absolute; z-index:30; width:48px; height:37px; left:15px;}"+
-		".mapiator_zoom_in{background:url(../images/zoomIn_blur.png); top:15px;}"+
-		".mapiator_zoom_out{background:url(../images/zoomOut_blur.png); top:55px;}",
+		".mapiator_zoom_in{background:url(images/zoomIn_blur.png); top:15px;}"+
+		".mapiator_zoom_out{background:url(images/zoomOut_blur.png); top:55px;}",
 		function(){
 			// add zoom buttons
 			var zoomInButton = document.createElement('div');
