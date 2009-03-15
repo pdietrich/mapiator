@@ -28,12 +28,12 @@ Mapiator.util = {
 			res[i] = fun(array[i]);
 		return res;
 	},
-	appendCSS: function(css, callback) {
-		var style = document.createElement('style');
-		style.innerHTML = css;
-		document.body.appendChild(style);
-		// give browser some time to digest...
-		if( callback ) setTimeout( callback, 1 );
+	addCssRule: function(name, css, callback) {
+		var ss = document.styleSheets[0];
+		if (ss.addRule) { // Browser is IE?
+			var selectors = name.split(',');
+			for( i in selectors ) ss.addRule(selectors[i], css, 0);
+	    } else ss.insertRule(name+'{'+css+'}', 0);
 	},
 	gudermann: function(y) {
 		return 2*Math.atan(Math.exp(y)) - 0.5*Math.PI
@@ -565,6 +565,8 @@ Mapiator.Map = function( divId ) {
 };
 
 Mapiator.TraditionalController = function( map ) {
+	var util = Mapiator.util;
+	
 	// panning:
 	var xmove, ymove;
 	function moveMap(e) {
@@ -602,32 +604,33 @@ Mapiator.TraditionalController = function( map ) {
 		var x = (e.pageX||e.clientX)-mapX, y = (e.pageY||e.clientY)-mapY; // this will not work properly in IE if the page is scrolled!
 		map.zoomIn( x, y );
 	};
-	
-	Mapiator.util.appendCSS(
-		".mapiator_zoom_in, .mapiator_zoom_out{position:absolute; z-index:30; width:48px; height:37px; left:15px;}"+
-		".mapiator_zoom_in{background:url(images/zoomIn_blur.png); top:15px;}"+
-		".mapiator_zoom_out{background:url(images/zoomOut_blur.png); top:55px;}",
-		function(){
-			// add zoom buttons
-			var zoomInButton = document.createElement('div');
-			zoomInButton.setAttribute('class', 'mapiator_zoom_in');
 
-			map.mapDiv.appendChild( zoomInButton );
-			zoomInButton.onmouseup = function(){map.zoomIn();};
+	// add zoom buttons
+	var zoomInButton = document.createElement('div');
+	// zoomInButton.setAttribute('class', 'mapiator_zoom_in');
+	zoomInButton.id = 'mapiator_zoom_in';
 
-			var zoomOutButton = document.createElement('div');
-			zoomOutButton.setAttribute('class', 'mapiator_zoom_out');
+	map.mapDiv.appendChild( zoomInButton );
+	zoomInButton.onmouseup = function(){map.zoomIn();};
 
-			map.mapDiv.appendChild( zoomOutButton );
-			zoomOutButton.onmouseup = function(){map.zoomOut();};
+	var zoomOutButton = document.createElement('div');
+	zoomOutButton.id = 'mapiator_zoom_out';
 
-			function preventDblClick(e){
-				if( map.IE ) window.event.cancelBubble=true
-				else e.stopPropagation();
-			};
-			zoomInButton.ondblclick = preventDblClick;
-			zoomOutButton.ondblclick = preventDblClick;
-	});
+	map.mapDiv.appendChild( zoomOutButton );
+	zoomOutButton.onmouseup = function(){map.zoomOut();};
+
+	function preventDblClick(e){
+		if( map.IE ) window.event.cancelBubble=true
+		else e.stopPropagation();
+	};
+	zoomInButton.ondblclick = preventDblClick;
+	zoomOutButton.ondblclick = preventDblClick;
+
+	setTimeout( function() {
+		util.addCssRule( '#mapiator_zoom_in, #mapiator_zoom_out', 'position:absolute; z-index:30; width:48px; height:37px; left:15px;' );
+		util.addCssRule( '#mapiator_zoom_in', 'background:url(../images/zoomIn_blur.png); top:15px;' );
+		util.addCssRule( '#mapiator_zoom_out', 'background:url(../images/zoomOut_blur.png); top:55px;' );
+	}, 1);
 };
 
 Mapiator.iPhoneController = function(map) {
